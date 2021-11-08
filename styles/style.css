@@ -1,0 +1,16 @@
+#grid {
+    width: 960px;
+    height: 960px;
+    display: grid;
+    gap: 5px;
+}
+
+.square {
+    background-color: limegreen;
+    width: 1fr;
+    height: 1fr;
+}
+
+.square:hover {
+    filter: brightness(0.85);
+}
