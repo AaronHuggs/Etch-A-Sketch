@@ -6,6 +6,10 @@ const grid = document.querySelector('#grid');
 let gridSize = 8;
 
 
+//Square color, changes each time.
+let squareColor = randomColor();
+
+
 //Create squares when page has loaded.
 document.addEventListener("DOMContentLoaded", function() {
     createSquare(gridSize);
@@ -15,10 +19,41 @@ document.addEventListener("DOMContentLoaded", function() {
 //Create reset button above the grid
 const resetButton = document.createElement('button');
 resetButton.innerHTML = 'Reset Grid';
+//When clicked, reset the grid and ask for new grid size
 resetButton.addEventListener('click',function(){
     getGridSize();
-}); //<-- When clicked, reset the grid and ask for new grid size
-grid.parentNode.insertBefore(resetButton,grid); //<-- Add button on top of grid
+}); 
+//Add button on top of grid
+grid.parentNode.insertBefore(resetButton,grid); 
+
+
+//Create checkbox for rainbow mode
+const rainbowBox = document.createElement('input');
+rainbowBox.type = 'checkbox';
+rainbowBox.id = 'rainbow';
+let rainbowEnabled = false;
+const label = document.createElement('label');
+label.htmlFor = 'rainbow';
+label.appendChild(document.createTextNode('Enable Rainbow Mode'));
+//When checked, change square colors to rainbow
+rainbowBox.addEventListener('change',function(){
+    if (this.checked) {
+        rainbowEnabled = true;
+        removeSquares();
+        createSquare(gridSize);
+    }
+    else {
+        rainbowEnabled = false;
+        removeSquares();
+        squareColor = randomColor();
+        createSquare(gridSize);
+    }
+});
+//Add checkbox after button on top of grid
+grid.parentNode.insertBefore(rainbowBox,grid); 
+grid.parentNode.insertBefore(label,grid); 
+
+
 
 
 //===================FUNCTIONS===================================//
@@ -31,15 +66,25 @@ function createSquare(gridSize) {
         let newSquare = document.createElement('div'); 
         newSquare.classList.add('square');// <-- Adds the square class to each square so CSS rules apply
         
-        //Randomize square color on creation
-        let squareColor = randomColor();
-        newSquare.style.backgroundColor = squareColor;
-        
-        //Randomize square color on mouse over
-        newSquare.addEventListener("mouseover", function(){
-            newSquare.style.backgroundColor = randomColor();
-        });
+        //If rainbow checkbox is checked, randomize square color on creation
+        if (rainbowEnabled) {
+            squareColor = randomColor();
+            newSquare.style.backgroundColor = squareColor;
 
+            //Randomize square color on mouse over
+            newSquare.addEventListener("mouseover", function(){
+                newSquare.style.backgroundColor = randomColor();
+            });
+        }
+        else {
+            //Use same color
+            newSquare.style.backgroundColor = squareColor;
+
+            //Change brightness on mouseover
+            newSquare.addEventListener("mouseover", function(){
+                newSquare.style.filter = "brightness(50%)";
+            });
+        }
         grid.appendChild(newSquare); // <-- Adds created square to the grid
     }
 }
@@ -62,8 +107,11 @@ function getGridSize() {
     while(input <= 0 || input > 100 || input == null) {
         input = prompt("Specify Grid Size (Min:1 / Max:100)", "64");
     }
+    gridSize = input;
     removeSquares();
-    createSquare(input);
+    //Get a new color too, why not.
+    squareColor = randomColor();
+    createSquare(gridSize);
 }
 
 
